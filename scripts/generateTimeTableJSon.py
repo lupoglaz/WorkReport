@@ -2,43 +2,14 @@ import os
 import sys
 import datetime
 import json
+from parsingDataScripts import load_data_timetable, get_time_entry, get_events
 
-def load_data_timetable(files):
-	data = {}
-	last_key = None
-	for fName in files:
-		f = open(fName,'r')
-		for line in f:
-			sline = line.split()
-			
-			if len(sline)<2:
-				last_key = None
-				continue
-			
-			if last_key is None: #new day
-				if sline[1]=='Nov':
-					month = 11
-				else:
-					print 'Cant read the month'
-				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
-				key = dt
-				data[key] = []
-				last_key = key
-				continue
-			
-			if not last_key is None:
-				data[last_key].append((sline[0],sline[1]))
-				continue
-			
-	return data
-
-def get_time_entry(entry):
-	sentry = entry[0].split(':')
-	hour = int(sentry[0])
-	minute = int(sentry[1])
-	return datetime.time(hour = hour, minute=minute)
 
 def get_single_day_activities(day_data):
+# outputs dictionary of activities during the day:
+# activities_dict = {
+# 	<text|activity>: class datetime.timedelta
+# }
 	activities_dict = {}
 	for i, entry in enumerate(day_data):
 		if i < (len(day_data)-1):
@@ -53,49 +24,78 @@ def get_single_day_activities(day_data):
 			break
 	return activities_dict
 
-
 def get_activity_time_day(data, activity):
+# outputs total time of certain activity during the day:
+# activity_time = {
+# 	<isoformat|date> : <digit|total_hours>
+# }
 	activity_time = {}
 	for key in sorted(data.keys()):
 		activities_dict = get_single_day_activities(data[key])
 		if activity in activities_dict:
-			activity_time[key] = activities_dict[activity]
+			activity_time[key.isoformat()] = activities_dict[activity].total_seconds()/(60.0*60.0)
 		else:
-			activity_time[key] = datetime.timedelta(seconds=0)
+			activity_time[key.isoformat()] = datetime.timedelta(seconds=0).total_seconds()/(60.0*60.0)
 
 	return activity_time
 
-def save_timings_json(timings, filename):
-	json_dict = {}
+
+def get_first_and_last_activities(timings):
+# outputs time of first, last activities during the day and the total time between them:
+# first_and_last_time = {
+#	'start': { <isoformat|date> : <isoformat|time>, ... }
+#	'leave': { <isoformat|date> : <isoformat|time>, ... }
+#	'total_time': { <isoformat|date> : <digit|total time>, ... }
+# }
+	first_and_last_time = {'start':{}, 'leave':{}, 'total_time':{}}
 	for day in timings.keys():
-		json_dict[day.isoformat()] = timings[day].total_seconds()/(60.0*60.0)
+		t0 = get_time_entry(timings[day][0])
+		t1 = get_time_entry(timings[day][-1])
+		dt = datetime.timedelta(minutes = t1.minute-t0.minute, hours = t1.hour - t0.hour)
+		first_and_last_time['start'][day.isoformat()] = t0.isoformat()
+		first_and_last_time['leave'][day.isoformat()] = t1.isoformat()
+		first_and_last_time['total_time'][day.isoformat()] = dt.total_seconds()/(60.0*60.0)
+	return first_and_last_time
 
+def get_events_dict(events_data):
+	events_dict = {}
+	for day in events_data.keys():
+		for i,event in enumerate(events_data[day]):
+			if i==0:
+				events_dict[event] = day.isoformat()
+			else:
+				event_string = ''
+				for j in range(0,i):
+					event_string+=' <br> <br>'
+				event_string+=event
+				events_dict[event_string] = day.isoformat()
+	return events_dict
+
+
+def save_dict_as_json(time_dictionary, filename):
 	f = open(filename,'w')
-	json.dump(json_dict, f, sort_keys=True)
-	f.close()
-
-def save_multipletimings_json(timings_dict, filename):
-	json_dict = {}
-	for key in timings_dict.keys():
-		json_dict[key]={}
-		timings = timings_dict[key]
-		for day in timings.keys():
-			json_dict[key][day.isoformat()] = timings[day].total_seconds()/(60.0*60.0)
-
-	f = open(filename,'w')
-	json.dump(json_dict, f, sort_keys=True)
+	json.dump(time_dictionary, f, sort_keys=True)
 	f.close()
 
 
 if __name__=='__main__':
 	data = load_data_timetable(['../data/data_w1.dat'])
+	events_data = get_events(['../data/events_w1.dat'])
+	events_dict = get_events_dict(events_data)
 
+	first_and_last_time = get_first_and_last_activities(data)
+	first_and_last_time['events']=events_dict
+	save_dict_as_json(first_and_last_time, '../json/start_leave_timings.json')
+	
 	code_timings = get_activity_time_day(data, 'code')
-	#save_timings_json(code_timings, '../json/code_timings.json')
-
 	pause_timings = get_activity_time_day(data, 'pause')
-	#save_timings_json(pause_timings, '../json/pause_timings.json')
-	save_multipletimings_json({'code': code_timings, 
-								'pause': pause_timings}, 
-								'../json/code_pause_timings.json')
+	save_dict_as_json({'code': code_timings, 
+						'pause': pause_timings,
+						'events': events_dict}, 
+						'../json/code_pause_timings.json')
+
+
+
+
+
 

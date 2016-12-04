@@ -11,6 +11,46 @@
 		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script>
 		<title>Workreport</title>
+
+		<script>
+			function getTimings(activity, data){
+				var values = [];
+				var days = Object.keys(data[activity]);
+				var L = days.length;
+				for(i=0;i<L;i++){
+					values.push(data[activity][days[i]]);
+				}
+
+				return [days, values]
+			}
+			function getEventsAnnotations(data){
+				var events_dates = [];
+				var events_names = Object.keys(data['events']);
+				var L = events_names.length;
+				var annotation_list = [];
+				for(i=0;i<L;i++){
+					events_dates.push(data['events'][events_names[i]]);
+					annotation_list.push(
+					{
+						x: data['events'][events_names[i]],
+						text: events_names[i],
+						showarrow: true,
+						ay: -100,
+						align: 'left',
+						font: {
+							family: 'Courier New, monospace',
+							size: 12,
+							color: '#000000'
+						},
+						textangle: -90,
+						yanchor: 'top'
+					})
+				}
+
+				return annotation_list
+			}
+		</script>
+
 	</head>
 
 	<body>
@@ -29,26 +69,17 @@
 		<div id="main_content_wrap" class="outer">
 			<section id="main_content" class="inner">
 				<h3>
-				<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Total time spent coding.</h3>
+				<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Total time spent coding and pausing.</h3>
 
 				<p>
-					This plot shows the total time I spent coding.
+					This plot shows the total time I spent coding and the time I did nothing.
 				</p>
 
 				<div id="timingsPlot" style="width: 100%; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
 
 				<script>
 
-					function getTimings(activity, data){
-						var values = [];
-						var days = Object.keys(data[activity]);
-						var L = days.length;
-						for(i=0;i<L;i++){
-							values.push(data[activity][days[i]]);
-						}
-
-						return [days, values]
-					}
+					
 					d3.json('json/code_pause_timings.json', function(data){
 						
 						
@@ -79,26 +110,107 @@
 									color: 'rgba(250,200,100,0.7)',
 								}
 							}
-						
+						events_annotations = getEventsAnnotations(data)
 						var layout = {
-						        title:'Code and pause timings',
+							annotations: events_annotations,
+					        title:'Code and pause timings',
+					        xaxis: {
+								title: 'Date',
+								showgrid: false,
+								zeroline: false
+							},
+							yaxis: {
+								title: 'Hours',
+								showgrid: false,
+								zeroline: false
+							},
+							barmode: 'stack'
+					    };
+						var traces = [codedata, pausedata];
+						Plotly.newPlot('timingsPlot', traces, layout);
+					});
+
+					</script>
+				<h3>
+				<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Come and leave times.</h3>
+
+				<p>
+					This plot shows when I come and leave from uni.
+				</p>
+
+				<div id="startLeavePlot" style="width: 100%; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+				<script>
+				d3.json('json/start_leave_timings.json', function(data){
+						
+						
+						var days_values_start = getTimings('start', data);
+						var startdata = 
+							{
+								x: days_values_start[0],
+								y: days_values_start[1],
+								name: 'start',
+								//type: 'bar',
+								mode: 'lines+markers',
+								marker: {
+									color: 'rgba(100,100,140,0.9)',
+								}
+							}
+						
+
+						var days_values_leave = getTimings('leave', data);
+						var leavedata =
+							{
+								x: days_values_leave[0],
+								y: days_values_leave[1],
+								name: 'leave',
+								//type: 'bar',
+								mode: 'lines+markers',
+								marker: {
+									color: 'rgba(250,200,100,0.9)',
+								}
+							}
+						var days_values_total = getTimings('total_time', data);
+						var totaldata =
+							{
+								x: days_values_total[0],
+								y: days_values_total[1],
+								name: 'total time at work',
+								type: 'bar',
+								yaxis: 'y2',
+								//mode: 'lines+markers',
+								marker: {
+									color: 'rgba(250,100,100,0.4)',
+								}
+							}
+						events_annotations = getEventsAnnotations(data)
+						var layout = {
+						        title:'Time of start and leave the uni',
+						        annotations: events_annotations,
 						        xaxis: {
 									title: 'Date',
 									showgrid: false,
 									zeroline: false
 								},
 								yaxis: {
-									title: 'Hours',
+									title: 'Start/leave hours',
 									showgrid: false,
 									zeroline: false
 								},
+								yaxis2: {
+								    title: 'Total time at work',
+								    titlefont: {color: 'rgb(148, 103, 189)'},
+								    tickfont: {color: 'rgb(148, 103, 189)'},
+								    overlaying: 'y',
+								    side: 'right',
+								    showgrid: false,
+								  },
 								barmode: 'stack'
 						    };
-						var traces = [codedata, pausedata];
-						Plotly.newPlot('timingsPlot', traces, layout);
+						var traces = [startdata, leavedata, totaldata];
+						Plotly.newPlot('startLeavePlot', traces, layout);
 					});
-
 					</script>
+
 			</section>
 		</div>
 
