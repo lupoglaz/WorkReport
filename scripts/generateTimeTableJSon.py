@@ -79,7 +79,7 @@ def save_dict_as_json(time_dictionary, filename):
 
 
 if __name__=='__main__':
-	data = load_data_timetable(['../data/data_w1.dat'])
+	data = load_data_timetable(['../data/data_w1.dat', '../data/data_w3.dat'])
 	events_data = get_events(['../data/events_w1.dat'])
 	events_dict = get_events_dict(events_data)
 
