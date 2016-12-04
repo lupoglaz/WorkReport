@@ -74,13 +74,28 @@ def save_timings_json(timings, filename):
 	json.dump(json_dict, f, sort_keys=True)
 	f.close()
 
+def save_multipletimings_json(timings_dict, filename):
+	json_dict = {}
+	for key in timings_dict.keys():
+		json_dict[key]={}
+		timings = timings_dict[key]
+		for day in timings.keys():
+			json_dict[key][day.isoformat()] = timings[day].total_seconds()/(60.0*60.0)
+
+	f = open(filename,'w')
+	json.dump(json_dict, f, sort_keys=True)
+	f.close()
+
 
 if __name__=='__main__':
 	data = load_data_timetable(['../data/data_w1.dat'])
 
 	code_timings = get_activity_time_day(data, 'code')
-	save_timings_json(code_timings, '../json/code_timings.json')
+	#save_timings_json(code_timings, '../json/code_timings.json')
 
 	pause_timings = get_activity_time_day(data, 'pause')
-	save_timings_json(pause_timings, '../json/pause_timings.json')
+	#save_timings_json(pause_timings, '../json/pause_timings.json')
+	save_multipletimings_json({'code': code_timings, 
+								'pause': pause_timings}, 
+								'../json/code_pause_timings.json')
 

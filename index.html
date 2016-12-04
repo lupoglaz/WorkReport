@@ -29,121 +29,76 @@
 		<div id="main_content_wrap" class="outer">
 			<section id="main_content" class="inner">
 				<h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Total time spent coding.</h3>
+				<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Total time spent coding.</h3>
 
-<p>
-	This plot shows the total time I spent coding.
-</p>
+				<p>
+					This plot shows the total time I spent coding.
+				</p>
 
-<div id="myDiv" style="width: 800px; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+				<div id="timingsPlot" style="width: 100%; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
 
-<script type="text/javascript">
-	var layout = {
-		title:'Coding time, pause time'
-	};
-	var trace1 = {
-		x: [1, 2, 3, 4], 
-		y: [10, 15, 13, 17], 
-		name: '',
-		type: 'scatter'
-	};
-	var trace2 = {
-		x: [1, 2, 3, 4], 
-		y: [16, 5, 11, 9], 
-		name: '',
-		type: 'scatter'
-	};
-	var data = [trace1, trace2];
-	Plotly.newPlot('myDiv', data);
-</script>
+				<script>
 
-<h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Designer Templates</h3>
-<div id="timingsPlot" style="width: 800px; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+					function getTimings(activity, data){
+						var values = [];
+						var days = Object.keys(data[activity]);
+						var L = days.length;
+						for(i=0;i<L;i++){
+							values.push(data[activity][days[i]]);
+						}
 
-<script>
-	
-	require(["https://github.com/lupoglaz/WorkReport/raw/master/json/code_timings.json?callback=define"], function(data){
-		console.log(data);
-		var jsondata = JSON.stringify(data, null, 2);      	
-      	console.log("On data load");
-      	console.log(jsondata);
-		var values = [];
-		var L = Object.keys(data).length;
-		var keys = Object.keys(data);
-		var selectedKeys = [];
-		for(i=0;i<L;i++){
-			values.push(data[keys[i]]);
-		}
-		var hdata = [
-			{
-				x: keys,
-				y: values,
-				type: 'scatter',
-				name: 'code',
-				marker: {
-					color: 'rgba(100,250,100,0.7)',
-				},
-			}
-		];
+						return [days, values]
+					}
+					d3.json('json/code_pause_timings.json', function(data){
+						
+						
+						var days_values_code = getTimings('code', data);
+						
+						var codedata = 
+							{
+								x: days_values_code[0],
+								y: days_values_code[1],
+								name: 'code',
+								type: 'bar',
+								//mode: 'lines+markers',
+								marker: {
+									color: 'rgba(100,200,140,0.7)',
+								}
+							}
+						
 
-		var myPlot = document.getElementById('timingsPlot');
-		var layout = {
-		        hovermode:'closest',
-		        title:'Code timings'
-		    };
+						var days_values_pause = getTimings('pause', data);
+						var pausedata =
+							{
+								x: days_values_pause[0],
+								y: days_values_pause[1],
+								name: 'pause',
+								type: 'bar',
+								//mode: 'lines+markers',
+								marker: {
+									color: 'rgba(250,200,100,0.7)',
+								}
+							}
+						
+						var layout = {
+						        title:'Code and pause timings',
+						        xaxis: {
+									title: 'Date',
+									showgrid: false,
+									zeroline: false
+								},
+								yaxis: {
+									title: 'Hours',
+									showgrid: false,
+									zeroline: false
+								},
+								barmode: 'stack'
+						    };
+						var traces = [codedata, pausedata];
+						Plotly.newPlot('timingsPlot', traces, layout);
+					});
 
-		Plotly.newPlot('timingsPlot', hdata, layout);
-    });
-
-	// d3.json("https://github.com/lupoglaz/WorkReport/raw/master/json/code_timings.json")
-	// .header("Access-Control-Allow-Origin", "https://render.githubusercontent.com")
- //    .on("beforesend", function(request) { request.withCredentials = true; })
- //    .get(function(data)
-	// {
-	// 	console.log("On data load");
-	// 	var values = [];
-	// 	var L = Object.keys(data).length;
-	// 	var keys = Object.keys(data);
-	// 	var selectedKeys = [];
-	// 	for(i=0;i<L;i++){
-	// 		values.push(data[keys[i]]);
-	// 	}
-	// 	var hdata = [
-	// 		{
-	// 			x: keys,
-	// 			y: values,
-	// 			type: 'scatter',
-	// 			name: 'code',
-	// 			marker: {
-	// 				color: 'rgba(100,250,100,0.7)',
-	// 			},
-	// 		}
-	// 	];
-
-	// 	var myPlot = document.getElementById('timingsPlot');
-	// 	var layout = {
-	// 	        hovermode:'closest',
-	// 	        title:'Code timings'
-	// 	    };
-
-	// 	Plotly.newPlot('timingsPlot', hdata, layout);
-	// }
-	// );
-	console.log("Data loaded")
-</script>
-
-<h3>
-<a id="creating-pages-manually" class="anchor" href="#creating-pages-manually" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating pages manually</h3>
-
-<p></p>
-
-<h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p></p>
-
-<h3>
+					</script>
 			</section>
 		</div>
 
