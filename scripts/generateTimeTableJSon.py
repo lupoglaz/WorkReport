@@ -52,8 +52,8 @@ def get_first_and_last_activities(timings):
 		t0 = get_time_entry(timings[day][0])
 		t1 = get_time_entry(timings[day][-1])
 		dt = datetime.timedelta(minutes = t1.minute-t0.minute, hours = t1.hour - t0.hour)
-		first_and_last_time['start'][day.isoformat()] = t0.isoformat()
-		first_and_last_time['leave'][day.isoformat()] = t1.isoformat()
+		first_and_last_time['start'][day.isoformat()] = t0.hour + t0.minute/60.0
+		first_and_last_time['leave'][day.isoformat()] = t1.hour + t1.minute/60.0
 		first_and_last_time['total_time'][day.isoformat()] = dt.total_seconds()/(60.0*60.0)
 	return first_and_last_time
 
