@@ -33,6 +33,8 @@ def load_data_timetable(files):
 					month = 12
 				elif sline[1]=='Jan':
 					month = 1
+				elif sline[1]=='Feb':
+					month = 2
 				else:
 					print 'Cant read the month'
 				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
