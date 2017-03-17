@@ -89,6 +89,12 @@ def get_events(files):
 					month = 11
 				elif sline[1]=='Dec':
 					month = 12
+				elif sline[1]=='Jan':
+					month = 1
+				elif sline[1]=='Feb':
+					month = 2
+				elif sline[1]=='Mar':
+					month = 3
 				else:
 					print 'Cant read the month'
 				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
