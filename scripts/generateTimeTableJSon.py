@@ -82,7 +82,7 @@ if __name__=='__main__':
 	data = load_data_timetable(['../data/data_w1.dat', '../data/data_w3.dat', '../data/data_w4.dat', '../data/data_w5.dat', \
 		'../data/data_w6.dat', '../data/data_w7.dat', '../data/data_w8.dat', '../data/data_w9.dat', '../data/data_w10.dat', \
 		'../data/data_w11.dat','../data/data_w12.dat','../data/data_w13.dat','../data/data_w14.dat','../data/data_w15.dat',\
-		'../data/data_w16.dat', '../data/data_w17.dat', '../data/data_w18.dat'])
+		'../data/data_w16.dat', '../data/data_w17.dat', '../data/data_w18.dat', '../data/data_w19.dat'])
 	events_data = get_events(['../data/events_w1.dat'])
 	events_dict = get_events_dict(events_data)
 
