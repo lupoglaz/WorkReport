@@ -39,6 +39,10 @@ def load_data_timetable(files):
 					month = 3
 				elif sline[1]=='Apr':
 					month = 4
+				elif sline[1]=='May':
+					month = 5
+				elif sline[1]=='Jun':
+					month = 6
 				else:
 					print 'Cant read the month'
 				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
@@ -99,6 +103,10 @@ def get_events(files):
 					month = 3
 				elif sline[1]=='Apr':
 					month = 4
+				elif sline[1]=='May':
+					month = 5
+				elif sline[1]=='Jun':
+					month = 6
 				else:
 					print 'Cant read the month'
 				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
