@@ -84,7 +84,7 @@ if __name__=='__main__':
 		'../data/data_w11.dat','../data/data_w12.dat','../data/data_w13.dat','../data/data_w14.dat','../data/data_w15.dat',\
 		'../data/data_w16.dat', '../data/data_w17.dat', '../data/data_w18.dat', '../data/data_w19.dat', '../data/data_w20.dat',\
 		'../data/data_w21.dat', '../data/data_w22.dat', '../data/data_w23.dat', '../data/data_w24.dat', '../data/data_w25.dat',\
-		'../data/data_w26.dat', '../data/data_w27.dat', '../data/data_w28.dat'])
+		'../data/data_w26.dat', '../data/data_w27.dat', '../data/data_w28.dat', '../data/data_w29.dat'])
 	events_data = get_events(['../data/events_w1.dat'])
 	events_dict = get_events_dict(events_data)
 
