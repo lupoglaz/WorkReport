@@ -21,7 +21,6 @@ def load_data_timetable(files):
 		f = open(fName,'r')
 		for line in f:
 			sline = line.split()
-			
 			if len(sline)<2:
 				last_key = None
 				continue
@@ -49,6 +48,9 @@ def load_data_timetable(files):
 					month = 8
 				elif sline[1]=='Sep':
 					month = 9
+				elif sline[1]=='Oct':
+					month = 10
+				
 				else:
 					print 'Cant read the month'
 				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
@@ -119,6 +121,8 @@ def get_events(files):
 					month = 8
 				elif sline[1]=='Sep':
 					month = 9
+				elif sline[1]=='Oct':
+					month = 10
 				else:
 					print 'Cant read the month'
 				dt = datetime.date(day = int(sline[0]), year = int(sline[2]), month = month)
